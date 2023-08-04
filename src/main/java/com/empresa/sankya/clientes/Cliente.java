@@ -48,6 +48,7 @@ public class Cliente {
 
     public Cliente(){
         this.data_de_cadastro = new Date();
+        this.alterado = false;
         this.data_alteracao_cadastral = null;
     }
 }

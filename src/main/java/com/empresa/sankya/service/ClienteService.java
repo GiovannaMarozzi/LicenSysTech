@@ -6,10 +6,8 @@ import com.empresa.sankya.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.spec.PSource;
 import java.util.Date;
 import java.util.List;
 
@@ -23,8 +21,9 @@ public class ClienteService {
     @Autowired
     private final ModelMapper mapper;
 
-    public void salvar(Cliente cliente){
-        repository.save(cliente);
+    public void salvar(ClientesDTO cliente){
+        Cliente novoCliente = mapper.map(cliente, Cliente.class);
+        repository.save(novoCliente);
     }
 
     public List<Cliente> clientes() {
@@ -40,15 +39,15 @@ public class ClienteService {
         Cliente clienteExistente = repository.findByCnpj(cliente.getCnpj());
         Date dataAtual = new Date();
 
-        if(cliente.getNome() != clienteExistente.getNome()){
+        if(cliente.getNome().equals(clienteExistente.getNome())){
             clienteExistente.setNome(cliente.getNome());
         }
 
-        if(cliente.getEmail() != clienteExistente.getEmail()){
+        if(cliente.getEmail().equals(clienteExistente.getEmail())){
             clienteExistente.setEmail(cliente.getEmail());
         }
 
-        if(cliente.getCep() != clienteExistente.getCep()){
+        if(cliente.getCep().equals(clienteExistente.getCep())){
             clienteExistente.setCep(cliente.getCep());
         }
 
@@ -60,5 +59,10 @@ public class ClienteService {
         Cliente clienteAlterado = repository.findByCnpj(cliente.getCnpj());
 
         return mapper.map(clienteAlterado, ClientesDTO.class);
+    }
+
+    public void deletarCliente(String cnpj) {
+        Cliente clienteExistente = repository.findByCnpj(cnpj);
+        repository.deleteById(clienteExistente.getId());
     }
 }

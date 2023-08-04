@@ -25,6 +25,7 @@ public class ClientesDTO {
     private Date data_alteracao_cadastral;
 
     public ClientesDTO(){
+        this.data_de_cadastro = new Date();
         this.alterado = false;
         this.data_alteracao_cadastral = null;
     }
