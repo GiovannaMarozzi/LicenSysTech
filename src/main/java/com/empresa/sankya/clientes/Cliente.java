@@ -2,14 +2,18 @@ package com.empresa.sankya.clientes;
 
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.antlr.v4.runtime.misc.NotNull;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.Date;
 
 @Data
 @Entity(name = "cliente")
-@NoArgsConstructor
+@AllArgsConstructor
 public class Cliente {
 
     @Id
@@ -35,4 +39,15 @@ public class Cliente {
 
     @Column(name = "data_de_cadastro")
     private Date data_de_cadastro;
+
+    @Column(name = "alterado")
+    private Boolean alterado;
+
+    @Column(name = "data_alteracao_cadastral")
+    private Date data_alteracao_cadastral;
+
+    public Cliente(){
+        this.data_de_cadastro = new Date();
+        this.data_alteracao_cadastral = null;
+    }
 }

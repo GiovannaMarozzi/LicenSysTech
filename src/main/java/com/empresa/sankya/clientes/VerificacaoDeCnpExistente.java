@@ -1,7 +1,7 @@
 package com.empresa.sankya.clientes;
 
+import com.empresa.sankya.dto.ClientesDTO;
 import com.empresa.sankya.repository.ClienteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class VerificacaoDeCnpExistente implements Verificacao{
 
@@ -12,7 +12,7 @@ public class VerificacaoDeCnpExistente implements Verificacao{
     }
 
     @Override
-    public boolean verificacao(Cliente cliente) {
+    public boolean verificacao(ClientesDTO cliente) {
         if(repository.findByCnpj(cliente.getCnpj()) == null){
             return false;
         }
