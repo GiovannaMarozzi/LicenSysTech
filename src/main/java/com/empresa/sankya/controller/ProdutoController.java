@@ -3,6 +3,7 @@ package com.empresa.sankya.controller;
 import com.empresa.sankya.clientes.Verificacao;
 import com.empresa.sankya.clientes.VerificacaoDeCnpjExistente;
 import com.empresa.sankya.dto.ProdutosDTO;
+import com.empresa.sankya.produtos.TipoDePedido;
 import com.empresa.sankya.repository.ClienteRepository;
 import com.empresa.sankya.service.ProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,23 @@ public class ProdutoController {
         Verificacao verificacaoCliente = new VerificacaoDeCnpjExistente(repository);
         try {
             if(verificacaoCliente.verificacao(produto.getCliente())){
-                service.novoPedidoDeEncomenda(produto);
+                service.novoPedidoDeEncomenda(produto, TipoDePedido.ENCOMENDA);
+                return ResponseEntity.status(HttpStatus.CREATED).body("Pedido de encomenda solicitado!");
+            }else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CPF não encontrado!");
+            }
+        }catch (Exception e){
+            System.out.println(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
+        }
+    }
+
+    @PostMapping("/compra")
+    public ResponseEntity<?> comprarNovosProdutos(@RequestBody ProdutosDTO produto){
+        Verificacao verificacaoCliente = new VerificacaoDeCnpjExistente(repository);
+        try {
+            if(verificacaoCliente.verificacao(produto.getCliente())){
+                service.novoPedidoDeEncomenda(produto, TipoDePedido.COMPRA);
                 return ResponseEntity.status(HttpStatus.CREATED).body("Pedido de encomenda solicitado!");
             }else{
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CPF não encontrado!");

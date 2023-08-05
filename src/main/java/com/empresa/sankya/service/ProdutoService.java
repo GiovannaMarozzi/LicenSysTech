@@ -26,16 +26,24 @@ public class ProdutoService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    public void novoPedidoDeEncomenda(ProdutosDTO produto) {
+    public void novoPedidoDeEncomenda(ProdutosDTO produto, TipoDePedido tipoDePedido) {
         Produtos novoProduto = mapper.map(produto, Produtos.class);
         Cliente cliente = clienteRepository.findByCnpj(produto.getCliente().getCnpj());
+        String observacoes = novoProduto.getObservacoes();
+
 
         novoProduto.setCliente(cliente);
-        novoProduto.setTipoDePedido(TipoDePedido.ENCOMENDA);
 
-        String observacoes = novoProduto.getObservacoes();
-        if (observacoes == null || observacoes.equals("")) {
-            novoProduto.setObservacoes("Solicito a encomenda do produto: " + novoProduto.getNome_produto() + " na quantidade: " + novoProduto.getQuantidade());
+        if(tipoDePedido.equals(TipoDePedido.ENCOMENDA)){
+            novoProduto.setTipoDePedido(TipoDePedido.ENCOMENDA);
+            if (observacoes == null || observacoes.equals("")) {
+                novoProduto.setObservacoes("Solicito a encomenda do produto: " + novoProduto.getNome_produto() + " na quantidade: " + novoProduto.getQuantidade());
+            }
+        }else{
+            novoProduto.setTipoDePedido(TipoDePedido.COMPRA);
+            if (observacoes == null || observacoes.equals("")) {
+                novoProduto.setObservacoes("Solicito a compra do produto: " + novoProduto.getNome_produto() + " na quantidade: " + novoProduto.getQuantidade());
+            }
         }
 
         repository.save(novoProduto);
