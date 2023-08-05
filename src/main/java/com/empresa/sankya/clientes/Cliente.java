@@ -1,18 +1,17 @@
 package com.empresa.sankya.clientes;
 
 
+import com.empresa.sankya.produtos.Produtos;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.Date;
+import java.util.List;
 
-@Data
 @Entity(name = "cliente")
+@Data
 @AllArgsConstructor
 public class Cliente {
 
@@ -22,19 +21,15 @@ public class Cliente {
     private Long id;
 
     @Column(name = "nome")
-    @NotNull
     private String nome;
 
     @Column(name = "cnpj")
-    @NotNull
     private String cnpj;
 
     @Column(name = "email")
-    @NotNull
     private String email;
 
     @Column(name = "cep")
-    @NotNull
     private String cep;
 
     @Column(name = "data_de_cadastro")
@@ -45,6 +40,9 @@ public class Cliente {
 
     @Column(name = "data_alteracao_cadastral")
     private Date data_alteracao_cadastral;
+
+    @OneToMany(mappedBy = "cliente")
+    private List<Produtos> produtos;
 
     public Cliente(){
         this.data_de_cadastro = new Date();
