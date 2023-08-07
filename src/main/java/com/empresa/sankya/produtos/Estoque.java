@@ -17,7 +17,7 @@ public class Estoque {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cnpj_empresa", referencedColumnName = "cnpj")
     private Cliente cliente;
 

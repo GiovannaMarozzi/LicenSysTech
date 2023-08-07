@@ -5,7 +5,11 @@ import com.empresa.sankya.dto.ProdutosDTO;
 import com.empresa.sankya.dto.PedidosDTO;
 import com.empresa.sankya.produtos.Produtos;
 import com.empresa.sankya.produtos.TipoDePedido;
+import com.empresa.sankya.produtos.compra_encomenda.Compra;
+import com.empresa.sankya.produtos.compra_encomenda.Encomenda;
+import com.empresa.sankya.produtos.compra_encomenda.SalvarTipoDePedido;
 import com.empresa.sankya.repository.ClienteRepository;
+import com.empresa.sankya.repository.produtos.EstoqueRepository;
 import com.empresa.sankya.repository.produtos.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -25,27 +29,15 @@ public class ProdutoService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    public void novoPedidoDeEncomenda(ProdutosDTO produto, TipoDePedido tipoDePedido) {
+    @Autowired
+    private EstoqueRepository estoqueRepository;
+
+    public void novoPedido(ProdutosDTO produto, TipoDePedido tipoDePedido) {
         Produtos novoProduto = mapper.map(produto, Produtos.class);
         Cliente cliente = clienteRepository.findByCnpj(produto.getCliente().getCnpj());
-        String observacoes = novoProduto.getObservacoes();
 
-
-        novoProduto.setCliente(cliente);
-
-        if(tipoDePedido.equals(TipoDePedido.ENCOMENDA)){
-            novoProduto.setTipoDePedido(TipoDePedido.ENCOMENDA);
-            if (observacoes == null || observacoes.equals("")) {
-                novoProduto.setObservacoes("Solicito a encomenda do produto: " + novoProduto.getNome_produto() + " na quantidade: " + novoProduto.getQuantidade());
-            }
-        }else{
-            novoProduto.setTipoDePedido(TipoDePedido.COMPRA);
-            if (observacoes == null || observacoes.equals("")) {
-                novoProduto.setObservacoes("Solicito a compra do produto: " + novoProduto.getNome_produto() + " na quantidade: " + novoProduto.getQuantidade());
-            }
-        }
-
-        repository.save(novoProduto);
+        SalvarTipoDePedido salvarTipo = new Encomenda(repository, new Compra(null, repository, estoqueRepository));
+        salvarTipo.salvar(novoProduto, cliente, tipoDePedido);
     }
 
     public PedidosDTO pedidosClientes(String cnpj) {

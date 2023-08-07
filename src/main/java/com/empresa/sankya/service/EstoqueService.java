@@ -40,6 +40,6 @@ public class EstoqueService {
     @Transactional
     public void apagarParcialmente(Integer quantidade, EstoqueDTO estoque) {
         Cliente cliente = clienteRepository.findByCnpj(estoque.getCliente().getCnpj());
-        repository.deletarPorQuantidade(quantidade, cliente, estoque.getNomeProduto());
+        repository.alterarQuantidade(quantidade, cliente.getCnpj(), estoque.getNomeProduto());
     }
 }

@@ -35,12 +35,29 @@ public class ProdutoController {
         Verificacao verificacaoCliente = new VerificacaoDeCnpjExistente(repository);
         try {
             if(verificacaoCliente.verificacao(produto.getCliente())){
-                service.novoPedidoDeEncomenda(produto, TipoDePedido.ENCOMENDA);
+                service.novoPedido(produto, TipoDePedido.ENCOMENDA);
                 return ResponseEntity.status(HttpStatus.CREATED).body("Pedido de encomenda solicitado!");
             }else{
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CPF não encontrado!");
             }
         }catch (Exception e){
+            System.out.println(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
+        }
+    }
+
+    @PostMapping("/compra")
+    public ResponseEntity<?> comprarNovosProdutos(@RequestBody ProdutosDTO produto){
+        Verificacao verificacaoCliente = new VerificacaoDeCnpjExistente(repository);
+        try {
+            if(verificacaoCliente.verificacao(produto.getCliente())){
+                service.novoPedido(produto, TipoDePedido.COMPRA);
+                return ResponseEntity.status(HttpStatus.CREATED).body("Compra finalizada!");
+            }else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CPF não encontrado!");
+            }
+        }catch (Exception e){
+            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
         }
     }
@@ -77,21 +94,6 @@ public class ProdutoController {
         }
 
         return null;
-    }
-
-    @PostMapping("/compra")
-    public ResponseEntity<?> comprarNovosProdutos(@RequestBody ProdutosDTO produto){
-        Verificacao verificacaoCliente = new VerificacaoDeCnpjExistente(repository);
-        try {
-            if(verificacaoCliente.verificacao(produto.getCliente())){
-                service.novoPedidoDeEncomenda(produto, TipoDePedido.COMPRA);
-                return ResponseEntity.status(HttpStatus.CREATED).body("Pedido de encomenda solicitado!");
-            }else{
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CPF não encontrado!");
-            }
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
-        }
     }
 
     @GetMapping("pedidos/cnpj={cnpj}")
