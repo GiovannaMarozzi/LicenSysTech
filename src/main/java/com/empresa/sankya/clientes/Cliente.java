@@ -1,6 +1,7 @@
 package com.empresa.sankya.clientes;
 
 
+import com.empresa.sankya.produtos.Estoque;
 import com.empresa.sankya.produtos.Produtos;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,7 +24,7 @@ public class Cliente {
     @Column(name = "nome")
     private String nome;
 
-    @Column(name = "cnpj")
+    @Column(name = "cnpj", unique = true)
     private String cnpj;
 
     @Column(name = "email")

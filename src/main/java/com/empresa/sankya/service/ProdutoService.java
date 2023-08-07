@@ -1,13 +1,12 @@
 package com.empresa.sankya.service;
 
-import ch.qos.logback.core.net.server.Client;
 import com.empresa.sankya.clientes.Cliente;
 import com.empresa.sankya.dto.ProdutosDTO;
+import com.empresa.sankya.dto.PedidosDTO;
 import com.empresa.sankya.produtos.Produtos;
-import com.empresa.sankya.produtos.Tipo;
 import com.empresa.sankya.produtos.TipoDePedido;
 import com.empresa.sankya.repository.ClienteRepository;
-import com.empresa.sankya.repository.ProdutoRepository;
+import com.empresa.sankya.repository.produtos.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,4 +47,21 @@ public class ProdutoService {
 
         repository.save(novoProduto);
     }
+
+    public PedidosDTO pedidosClientes(String cnpj) {
+        Cliente cliente = clienteRepository.findByCnpj(cnpj);
+
+        int quantidadeCompra = repository.countByTipoDePedido(TipoDePedido.COMPRA, cliente.getId());
+        int quantidadeEncomenda = repository.countByTipoDePedido(TipoDePedido.ENCOMENDA, cliente.getId());
+
+        PedidosDTO listaDePedidos = new PedidosDTO();
+
+        listaDePedidos.setCnpj_cliente(cliente.getCnpj());
+        listaDePedidos.setNome_cliente(cliente.getNome());
+        listaDePedidos.setQuantidade_de_compras(quantidadeCompra);
+        listaDePedidos.setQuantidade_de_encomendas(quantidadeEncomenda);
+
+        return mapper.map(listaDePedidos, PedidosDTO.class);
+    }
+
 }
