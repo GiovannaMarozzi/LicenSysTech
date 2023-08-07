@@ -62,7 +62,7 @@ public class ClienteController {
         try {
             return service.clientePorCnpj(cnpj);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro:"+e.getMessage());
         }
     }
 
@@ -76,7 +76,7 @@ public class ClienteController {
         } catch (CnpjInexistente e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro:"+e.getMessage());
         }
     }
 
@@ -87,7 +87,7 @@ public class ClienteController {
             return ResponseEntity.status(HttpStatus.OK).body("Cliente deletado com sucesso!");
         } catch (Exception e) {
             System.out.println(e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro:"+e.getMessage());
         }
     }
 
@@ -107,7 +107,7 @@ public class ClienteController {
         }catch (LicencaExpirada e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro:"+e.getMessage());
         }
     }
 
@@ -118,7 +118,7 @@ public class ClienteController {
         } catch (CnpjInexistente e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro:"+e.getMessage());
         }
     }
 
