@@ -4,8 +4,10 @@ import com.empresa.sankya.clientes.Verificacao;
 import com.empresa.sankya.clientes.VerificacaoDeCnpjExistente;
 import com.empresa.sankya.clientes.VerificacaoDeCnpjInexistente;
 import com.empresa.sankya.dto.ClientesDTO;
+import com.empresa.sankya.dto.LicencaDTO;
 import com.empresa.sankya.erros.CnpjExistente;
 import com.empresa.sankya.erros.CnpjInexistente;
+import com.empresa.sankya.licenca.Licenca;
 import com.empresa.sankya.repository.ClienteRepository;
 import com.empresa.sankya.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,5 +81,11 @@ public class ClienteController {
             System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor.");
         }
+    }
+
+    @PostMapping("/licenca")
+    public ResponseEntity<?> adicionarNovasLicencas(@RequestBody LicencaDTO licenca){
+        service.adicionarNovaLicenca(licenca);
+        return null;
     }
 }

@@ -76,7 +76,7 @@ public class ProdutoController {
 
     }
 
-    @PostMapping("adicionarProduto")
+    @PostMapping("/adicionarProduto")
     public ResponseEntity<?> adicionarNovoProdutoNoEstoque(@RequestBody EstoqueDTO estoque){
         Verificacao verificacaoCliente = new VerificacaoDeCnpjInexistente(repository);
         try {

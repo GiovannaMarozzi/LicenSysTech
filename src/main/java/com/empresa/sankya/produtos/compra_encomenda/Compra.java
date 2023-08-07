@@ -16,7 +16,6 @@ public class Compra extends SalvarTipoDePedido{
 
     private ProdutoRepository produtoRepository;
     private EstoqueRepository estoqueRepository;
-//    private ClienteRepository clienteRepository;
 
     public Compra(SalvarTipoDePedido proximo, ProdutoRepository produtoRepository, EstoqueRepository estoqueRepository) {
         super(proximo);
