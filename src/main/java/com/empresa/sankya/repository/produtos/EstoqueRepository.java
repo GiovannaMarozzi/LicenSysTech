@@ -20,6 +20,7 @@ public interface EstoqueRepository extends JpaRepository<Estoque, Long> {
     @Query("UPDATE Estoque e SET e.quantidade = e.quantidade - :quantidadeSubtrair WHERE e.cliente.cnpj = :cnpj AND e.nomeProduto = :nomeProduto")
     void alterarQuantidade(Integer quantidadeSubtrair, String cnpj, String nomeProduto);
 
-    @Query("SELECT CASE WHEN EXISTS (SELECT e FROM Estoque e WHERE e.nomeProduto = :nomeProduto) THEN TRUE ELSE FALSE END FROM Estoque e")
-    boolean existsByProduto(String nomeProduto);
+    @Query("SELECT CASE WHEN EXISTS (SELECT e FROM Estoque e WHERE e.nomeProduto = :nomeProduto and e.quantidade >= :quantidade) THEN TRUE ELSE FALSE END FROM Estoque e")
+    boolean existsByProduto(String nomeProduto, Integer quantidade);
+
 }

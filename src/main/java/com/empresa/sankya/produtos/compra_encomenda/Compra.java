@@ -1,6 +1,7 @@
 package com.empresa.sankya.produtos.compra_encomenda;
 
 import com.empresa.sankya.clientes.Cliente;
+import com.empresa.sankya.erros.QuantidadeInexistente;
 import com.empresa.sankya.produtos.Produtos;
 import com.empresa.sankya.produtos.TipoDePedido;
 import com.empresa.sankya.repository.ClienteRepository;
@@ -33,16 +34,16 @@ public class Compra extends SalvarTipoDePedido{
 
         produto.setTipoDePedido(TipoDePedido.COMPRA);
 
-        boolean existentesNoEstoque = estoqueRepository.existsByProduto(produto.getNome_produto());
+        boolean existentesNoEstoque = estoqueRepository.existsByProduto(produto.getNome_produto(), produto.getQuantidade());
 
         if (existentesNoEstoque){
             if (observacoes == null || observacoes.equals("")) {
-                produto.setObservacoes("Solicito a compra do produto: " + produto.getNome_produto() + " na quantidade: " + produto.getQuantidade());
+                produto.setObservacoes("Compra do produto: " + produto.getNome_produto() + " na quantidade: " + produto.getQuantidade());
             }
             estoqueRepository.alterarQuantidade(produto.getQuantidade(), cliente.getCnpj(), produto.getNome_produto());
             produtoRepository.save(produto);
         }else {
-            System.out.println("Não existe no estoque");
+            throw new QuantidadeInexistente("Quantidade inexistente");
         }
 
     }

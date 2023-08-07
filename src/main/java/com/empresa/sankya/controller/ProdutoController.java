@@ -4,6 +4,7 @@ import com.empresa.sankya.clientes.Verificacao;
 import com.empresa.sankya.clientes.VerificacaoDeCnpjExistente;
 import com.empresa.sankya.dto.EstoqueDTO;
 import com.empresa.sankya.dto.ProdutosDTO;
+import com.empresa.sankya.erros.QuantidadeInexistente;
 import com.empresa.sankya.produtos.Estoque;
 import com.empresa.sankya.produtos.TipoDePedido;
 import com.empresa.sankya.repository.ClienteRepository;
@@ -41,7 +42,6 @@ public class ProdutoController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CPF não encontrado!");
             }
         }catch (Exception e){
-            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
         }
     }
@@ -56,8 +56,9 @@ public class ProdutoController {
             }else{
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CPF não encontrado!");
             }
+        }catch (QuantidadeInexistente e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quantidade inexistente no estoque!");
         }catch (Exception e){
-            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
         }
     }
