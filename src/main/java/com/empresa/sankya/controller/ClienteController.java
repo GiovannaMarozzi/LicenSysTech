@@ -1,9 +1,11 @@
 package com.empresa.sankya.controller;
 
-import com.empresa.sankya.clientes.Cliente;
 import com.empresa.sankya.clientes.Verificacao;
 import com.empresa.sankya.clientes.VerificacaoDeCnpjExistente;
+import com.empresa.sankya.clientes.VerificacaoDeCnpjInexistente;
 import com.empresa.sankya.dto.ClientesDTO;
+import com.empresa.sankya.erros.CnpjExistente;
+import com.empresa.sankya.erros.CnpjInexistente;
 import com.empresa.sankya.repository.ClienteRepository;
 import com.empresa.sankya.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +27,13 @@ public class ClienteController {
     public ResponseEntity<?> salvar(@RequestBody ClientesDTO informacoes) {
         Verificacao verificacaoCNPJ = new VerificacaoDeCnpjExistente(repository);
         try {
-            if (verificacaoCNPJ.verificacao(informacoes)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CNPJ já existente");
-            }
+            verificacaoCNPJ.verificacao(informacoes);
             service.salvar(informacoes);
             return ResponseEntity.status(HttpStatus.CREATED).body("Cadastro realizado com sucesso!");
+        } catch (CnpjExistente e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CNPJ já existente!");
         } catch (Exception e) {
+            System.out.println(e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao salvar dados do cliente");
         }
     }
@@ -55,16 +58,14 @@ public class ClienteController {
 
     @PutMapping
     public ResponseEntity<?> alterarDadosCliente(@RequestBody ClientesDTO cliente) {
-        Verificacao verificacaoCnpj = new VerificacaoDeCnpjExistente(repository);
+        Verificacao verificacaoCnpj = new VerificacaoDeCnpjInexistente(repository);
         try {
-            if (verificacaoCnpj.verificacao(cliente)) {
-                ClientesDTO clienteAlterado = service.alteracaoCadastral(cliente);
-                return ResponseEntity.status(HttpStatus.OK).body(clienteAlterado);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado.");
-            }
+            verificacaoCnpj.verificacao(cliente);
+            ClientesDTO clienteAlterado = service.alteracaoCadastral(cliente);
+            return ResponseEntity.status(HttpStatus.OK).body(clienteAlterado);
+        } catch (CnpjInexistente e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CNPJ não encontrado!");
         } catch (Exception e) {
-            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor.");
         }
     }

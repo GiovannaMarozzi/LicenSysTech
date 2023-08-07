@@ -1,6 +1,7 @@
 package com.empresa.sankya.clientes;
 
 import com.empresa.sankya.dto.ClientesDTO;
+import com.empresa.sankya.erros.CnpjExistente;
 import com.empresa.sankya.repository.ClienteRepository;
 
 public class VerificacaoDeCnpjExistente implements Verificacao{
@@ -11,11 +12,9 @@ public class VerificacaoDeCnpjExistente implements Verificacao{
         this.repository = repository;
     }
 
-    @Override
-    public boolean verificacao(ClientesDTO cliente) {
-        if(repository.findByCnpj(cliente.getCnpj()) == null){
-            return false;
+    public void verificacao(ClientesDTO cliente) throws CnpjExistente {
+        if (repository.findByCnpj(cliente.getCnpj()) != null) {
+            throw new CnpjExistente("CNPJ já existente!");
         }
-        return true;
     }
 }

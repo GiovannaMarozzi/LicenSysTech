@@ -1,22 +1,19 @@
 package com.empresa.sankya.controller;
 
 import com.empresa.sankya.clientes.Verificacao;
-import com.empresa.sankya.clientes.VerificacaoDeCnpjExistente;
+import com.empresa.sankya.clientes.VerificacaoDeCnpjInexistente;
 import com.empresa.sankya.dto.EstoqueDTO;
 import com.empresa.sankya.dto.ProdutosDTO;
+import com.empresa.sankya.erros.CnpjInexistente;
 import com.empresa.sankya.erros.QuantidadeInexistente;
-import com.empresa.sankya.produtos.Estoque;
 import com.empresa.sankya.produtos.TipoDePedido;
 import com.empresa.sankya.repository.ClienteRepository;
 import com.empresa.sankya.service.EstoqueService;
 import com.empresa.sankya.service.ProdutoService;
-import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("produto")
@@ -33,32 +30,31 @@ public class ProdutoController {
 
     @PostMapping("/encomenda")
     public ResponseEntity<?> encomendarNovosProdutos(@RequestBody ProdutosDTO produto){
-        Verificacao verificacaoCliente = new VerificacaoDeCnpjExistente(repository);
+        Verificacao verificacaoCliente = new VerificacaoDeCnpjInexistente(repository);
         try {
-            if(verificacaoCliente.verificacao(produto.getCliente())){
+            verificacaoCliente.verificacao(produto.getCliente());
                 service.novoPedido(produto, TipoDePedido.ENCOMENDA);
                 return ResponseEntity.status(HttpStatus.CREATED).body("Pedido de encomenda solicitado!");
-            }else{
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CPF não encontrado!");
-            }
+        }catch (CnpjInexistente e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CNPJ não encontrado!");
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
         }
     }
 
     @PostMapping("/compra")
-    public ResponseEntity<?> comprarNovosProdutos(@RequestBody ProdutosDTO produto){
-        Verificacao verificacaoCliente = new VerificacaoDeCnpjExistente(repository);
+    public ResponseEntity<?> comprarNovosProdutos(@RequestBody ProdutosDTO produto) {
+        Verificacao verificacaoCliente = new VerificacaoDeCnpjInexistente(repository);
         try {
-            if(verificacaoCliente.verificacao(produto.getCliente())){
-                service.novoPedido(produto, TipoDePedido.COMPRA);
-                return ResponseEntity.status(HttpStatus.CREATED).body("Compra finalizada!");
-            }else{
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CPF não encontrado!");
-            }
-        }catch (QuantidadeInexistente e){
+            verificacaoCliente.verificacao(produto.getCliente());
+            service.novoPedido(produto, TipoDePedido.COMPRA);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Compra finalizada!");
+
+        } catch (CnpjInexistente e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CNPJ não encontrado!");
+        } catch (QuantidadeInexistente e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quantidade inexistente no estoque!");
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
         }
     }
@@ -70,7 +66,7 @@ public class ProdutoController {
     }
 
     @PutMapping("/deletar/quantidade={quantidade}")
-    public ResponseEntity<?> deletarQuantidadeEspecífica(@PathVariable Integer quantidade, @RequestBody EstoqueDTO estoque){
+    public ResponseEntity<?> alterarQuantidadeEspecífica(@PathVariable Integer quantidade, @RequestBody EstoqueDTO estoque){
         try{
             estoqueService.apagarParcialmente(quantidade, estoque);
             return ResponseEntity.status(HttpStatus.OK).body("Foram deletados "+quantidade+" de "+estoque.getNomeProduto()+" do estoque");
@@ -82,19 +78,17 @@ public class ProdutoController {
 
     @PostMapping("adicionarProduto")
     public ResponseEntity<?> adicionarNovoProdutoNoEstoque(@RequestBody EstoqueDTO estoque){
-        Verificacao verificacaoCliente = new VerificacaoDeCnpjExistente(repository);
+        Verificacao verificacaoCliente = new VerificacaoDeCnpjInexistente(repository);
         try {
-            if(verificacaoCliente.verificacao(estoque.getCliente())){
-                estoqueService.adicionarAoEstoque(estoque);
-            }else{
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CPF não encontrado!");
-            }
+            verificacaoCliente.verificacao(estoque.getCliente());
+            estoqueService.adicionarAoEstoque(estoque);
+            return ResponseEntity.status(HttpStatus.OK).body("Produto adicionado ao estoque com sucesso!");
+
+        }catch (CnpjInexistente e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CNPJ não encontrado!");
         }catch (Exception e){
-            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
         }
-
-        return null;
     }
 
     @GetMapping("pedidos/cnpj={cnpj}")
