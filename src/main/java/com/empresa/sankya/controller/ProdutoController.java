@@ -36,7 +36,7 @@ public class ProdutoController {
                 service.novoPedido(produto, TipoDePedido.ENCOMENDA);
                 return ResponseEntity.status(HttpStatus.CREATED).body("Pedido de encomenda solicitado!");
         }catch (CnpjInexistente e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CNPJ não encontrado!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
         }
@@ -51,9 +51,9 @@ public class ProdutoController {
             return ResponseEntity.status(HttpStatus.CREATED).body("Compra finalizada!");
 
         } catch (CnpjInexistente e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CNPJ não encontrado!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (QuantidadeInexistente e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quantidade inexistente no estoque!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
         }
@@ -85,7 +85,7 @@ public class ProdutoController {
             return ResponseEntity.status(HttpStatus.OK).body("Produto adicionado ao estoque com sucesso!");
 
         }catch (CnpjInexistente e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CNPJ não encontrado!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
         }

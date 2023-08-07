@@ -7,8 +7,13 @@ import com.empresa.sankya.dto.ClientesDTO;
 import com.empresa.sankya.dto.LicencaDTO;
 import com.empresa.sankya.erros.CnpjExistente;
 import com.empresa.sankya.erros.CnpjInexistente;
+import com.empresa.sankya.erros.LicencaExistente;
+import com.empresa.sankya.erros.LicencaExpirada;
 import com.empresa.sankya.licenca.Licenca;
+import com.empresa.sankya.licenca.VerificacaoDeLicenca;
+import com.empresa.sankya.licenca.VerificacaoLicenca;
 import com.empresa.sankya.repository.ClienteRepository;
+import com.empresa.sankya.repository.LicencaRepository;
 import com.empresa.sankya.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +30,9 @@ public class ClienteController {
     @Autowired
     ClienteRepository repository;
 
+    @Autowired
+    LicencaRepository licencaRepository;
+
     @PostMapping("/salvar")
     public ResponseEntity<?> salvar(@RequestBody ClientesDTO informacoes) {
         Verificacao verificacaoCNPJ = new VerificacaoDeCnpjExistente(repository);
@@ -33,7 +41,7 @@ public class ClienteController {
             service.salvar(informacoes);
             return ResponseEntity.status(HttpStatus.CREATED).body("Cadastro realizado com sucesso!");
         } catch (CnpjExistente e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CNPJ já existente!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             System.out.println(e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao salvar dados do cliente");
@@ -66,7 +74,7 @@ public class ClienteController {
             ClientesDTO clienteAlterado = service.alteracaoCadastral(cliente);
             return ResponseEntity.status(HttpStatus.OK).body(clienteAlterado);
         } catch (CnpjInexistente e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CNPJ não encontrado!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor.");
         }
@@ -84,8 +92,35 @@ public class ClienteController {
     }
 
     @PostMapping("/licenca")
-    public ResponseEntity<?> adicionarNovasLicencas(@RequestBody LicencaDTO licenca){
-        service.adicionarNovaLicenca(licenca);
-        return null;
+    public ResponseEntity<?> adicionarNovasLicencas(@RequestBody LicencaDTO licenca) {
+        Verificacao verificacaoCnpj = new VerificacaoDeCnpjInexistente(repository);
+        VerificacaoLicenca verificacaoLicenca = new VerificacaoDeLicenca(licencaRepository);
+        try {
+            verificacaoCnpj.verificacao(licenca.getCliente());
+            verificacaoLicenca.verificacaoDeLicenca(licenca.getTipoDeLicenca(), licenca.getCliente().getCnpj());
+            service.adicionarNovaLicenca(licenca);
+            return ResponseEntity.status(HttpStatus.OK).body("Licença adicionada ao cnpj: " + licenca.getCliente().getCnpj());
+        }catch (CnpjInexistente e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }catch (LicencaExistente e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }catch (LicencaExpirada e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor.");
+        }
     }
+
+    @GetMapping("/licenca/cnpj={cnpj}")
+    public Object verificacaoDeLicencas(@PathVariable String cnpj) {
+        try {
+            return service.licencas(cnpj);
+        } catch (CnpjInexistente e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor.");
+        }
+    }
+
+
 }
