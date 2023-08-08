@@ -12,7 +12,11 @@ import java.util.List;
 public interface LicencaRepository extends JpaRepository<Licenca, Long> {
     List<Licenca> findByCliente(Cliente cliente);
 
-    @Query("SELECT CASE WHEN EXISTS (SELECT l.tipoDeLicenca FROM Licenca l WHERE l.cliente.cnpj = :cnpj and l.tipoDeLicenca = :licenca) THEN TRUE ELSE FALSE END FROM Licenca l")
-    Boolean findByCnpj(String cnpj, TipoDeLicenca licenca);
+//    @Query("SELECT CASE WHEN EXISTS (SELECT l.tipoDeLicenca FROM Licenca l WHERE l.cliente.cnpj = :cnpj and l.tipoDeLicenca = :licenca) THEN TRUE ELSE FALSE END FROM Licenca l")
+//    Boolean findByCnpj(String cnpj, TipoDeLicenca licenca);
+
+    @Query("SELECT COUNT(l) FROM Licenca l WHERE l.cliente.cnpj = :cnpj and l.tipoDeLicenca = :licenca")
+    Long countByCnpjAndTipoDeLicenca(String cnpj, TipoDeLicenca licenca);
+
 
 }

@@ -2,6 +2,7 @@ package com.empresa.sankya.service;
 
 import com.empresa.sankya.clientes.Cliente;
 import com.empresa.sankya.dto.EstoqueDTO;
+import com.empresa.sankya.erros.CnpjInexistente;
 import com.empresa.sankya.produtos.Estoque;
 import com.empresa.sankya.repository.ClienteRepository;
 import com.empresa.sankya.repository.produtos.EstoqueRepository;
@@ -40,6 +41,11 @@ public class EstoqueService {
     @Transactional
     public void apagarParcialmente(Integer quantidade, EstoqueDTO estoque) {
         Cliente cliente = clienteRepository.findByCnpj(estoque.getCliente().getCnpj());
+
+        if (cliente == null) {
+            throw new CnpjInexistente("CNPJ não encontrado!");
+        }
+
         repository.alterarQuantidade(quantidade, cliente.getCnpj(), estoque.getNomeProduto());
     }
 }

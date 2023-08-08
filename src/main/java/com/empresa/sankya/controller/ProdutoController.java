@@ -38,7 +38,7 @@ public class ProdutoController {
         }catch (CnpjInexistente e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro: "+e.getMessage());
         }
     }
 
@@ -55,7 +55,7 @@ public class ProdutoController {
         } catch (QuantidadeInexistente e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro: "+e.getMessage());
         }
     }
 
@@ -70,8 +70,10 @@ public class ProdutoController {
         try{
             estoqueService.apagarParcialmente(quantidade, estoque);
             return ResponseEntity.status(HttpStatus.OK).body("Foram deletados "+quantidade+" de "+estoque.getNomeProduto()+" do estoque");
+        }catch (CnpjInexistente e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro: "+e.getMessage());
         }
 
     }
@@ -87,7 +89,7 @@ public class ProdutoController {
         }catch (CnpjInexistente e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro: "+e.getMessage());
         }
     }
 
@@ -96,7 +98,7 @@ public class ProdutoController {
         try {
             return service.pedidosClientes(cnpj);
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro: "+e.getMessage());
         }
     }
 }

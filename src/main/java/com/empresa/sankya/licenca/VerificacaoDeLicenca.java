@@ -13,8 +13,9 @@ public class VerificacaoDeLicenca implements VerificacaoLicenca {
 
     @Override
     public void verificacaoDeLicenca(TipoDeLicenca nome_licenca, String cnpj) {
-        if(repository.findByCnpj(cnpj, nome_licenca)){
-            throw new LicencaExistente("Licenca já existente para o cnpj "+cnpj);
+        Long count = repository.countByCnpjAndTipoDeLicenca(cnpj, nome_licenca);
+        if (count > 0) {
+            throw new LicencaExistente("Licenca já existente para o cnpj " + cnpj);
         }
     }
 }

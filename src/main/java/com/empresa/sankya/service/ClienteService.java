@@ -1,6 +1,8 @@
 package com.empresa.sankya.service;
 
 import com.empresa.sankya.clientes.Cliente;
+import com.empresa.sankya.clientes.Verificacao;
+import com.empresa.sankya.clientes.VerificacaoDeCnpjInexistente;
 import com.empresa.sankya.dto.ClientesDTO;
 import com.empresa.sankya.dto.LicencaDTO;
 import com.empresa.sankya.erros.CnpjExistente;
@@ -53,15 +55,15 @@ public class ClienteService {
         Cliente clienteExistente = repository.findByCnpj(cliente.getCnpj());
         Date dataAtual = new Date();
 
-        if(cliente.getNome().equals(clienteExistente.getNome())){
+        if(!cliente.getNome().equals(clienteExistente.getNome())){
             clienteExistente.setNome(cliente.getNome());
         }
 
-        if(cliente.getEmail().equals(clienteExistente.getEmail())){
+        if(!cliente.getEmail().equals(clienteExistente.getEmail())){
             clienteExistente.setEmail(cliente.getEmail());
         }
 
-        if(cliente.getCep().equals(clienteExistente.getCep())){
+        if(!cliente.getCep().equals(clienteExistente.getCep())){
             clienteExistente.setCep(cliente.getCep());
         }
 
@@ -77,6 +79,11 @@ public class ClienteService {
 
     public void deletarCliente(String cnpj) {
         Cliente clienteExistente = repository.findByCnpj(cnpj);
+
+        if (clienteExistente == null) {
+            throw new CnpjInexistente("CNPJ não encontrado!");
+        }
+
         repository.deleteById(clienteExistente.getId());
     }
 

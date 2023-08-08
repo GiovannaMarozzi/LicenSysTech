@@ -43,8 +43,7 @@ public class ClienteController {
         } catch (CnpjExistente e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            System.out.println(e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao salvar dados do cliente");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao salvar dados do cliente. Erro: "+e.getMessage());
         }
     }
 
@@ -53,7 +52,7 @@ public class ClienteController {
         try {
             return service.clientes();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao salvar dados do cliente");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro: "+e.getMessage());
         }
     }
 
@@ -62,7 +61,7 @@ public class ClienteController {
         try {
             return service.clientePorCnpj(cnpj);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro:"+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro: "+e.getMessage());
         }
     }
 
@@ -76,7 +75,7 @@ public class ClienteController {
         } catch (CnpjInexistente e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro:"+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro: "+e.getMessage());
         }
     }
 
@@ -85,9 +84,10 @@ public class ClienteController {
         try {
             service.deletarCliente(cnpj);
             return ResponseEntity.status(HttpStatus.OK).body("Cliente deletado com sucesso!");
-        } catch (Exception e) {
-            System.out.println(e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro:"+e.getMessage());
+        }catch (CnpjInexistente e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro: "+e.getMessage());
         }
     }
 
@@ -107,7 +107,7 @@ public class ClienteController {
         }catch (LicencaExpirada e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro:"+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro: "+e.getMessage());
         }
     }
 
@@ -118,7 +118,7 @@ public class ClienteController {
         } catch (CnpjInexistente e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro:"+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor. Erro: "+e.getMessage());
         }
     }
 
